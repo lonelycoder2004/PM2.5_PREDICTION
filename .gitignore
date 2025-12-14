@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+deploy/
+.env
+
+# Data & Artifacts
+unprocessed-data/
+*.csv
+*.nc
+*.h5
+*.log
+.cache
+cache.sqlite
+
+# Models (Optional: Keep if you want to version control them, ignore if large)
+*.joblib

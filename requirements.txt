@@ -1,0 +1,16 @@
+flask
+pymongo[srv]
+apscheduler
+pandas
+numpy
+joblib
+xarray
+netCDF4
+scikit-learn
+requests
+h5py
+openmeteo-requests
+requests-cache
+retry-requests
+tqdm
+python-dotenv
