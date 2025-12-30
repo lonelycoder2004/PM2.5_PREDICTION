@@ -1,19 +1,78 @@
-# Python
+# Python artifacts
 __pycache__/
 *.py[cod]
 *$py.class
-venv/
-deploy/
-.env
+.python-version
+.Python
 
-# Data & Artifacts
+# Virtualenv / envs
+venv/
+env/
+.venv/
+pyenv/
+pip-wheel-metadata/
+
+# Distribution / builds
+build/
+dist/
+*.egg-info/
+*.egg
+
+# IDEs / editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data & large artifacts
 unprocessed-data/
+data/
+data_raw/
 *.csv
 *.nc
 *.h5
-*.log
-.cache
+*.tif
+*.tiff
+*.parquet
+*.sqlite
 cache.sqlite
 
-# Models (Optional: Keep if you want to version control them, ignore if large)
+# Models & ML artifacts
 *.joblib
+*.pkl
+*.hdf5
+models/
+
+# Caches, logs & temp files
+.cache/
+*.log
+logs/
+*.tmp
+*.part
+
+# Test / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.nox/
+
+# Secrets and envs
+.env
+.env.*
+credentials.json
+id_rsa
+*.pem
+
+# Misc
+*.pyc
+*.pyo
+*.pyd
+*.swp

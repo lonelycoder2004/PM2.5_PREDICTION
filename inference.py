@@ -53,19 +53,21 @@ def run_pipeline():
     # If date/time columns exist in sat_df, use them, otherwise use current time
     # sat.py output has 'date', 'time', 'Hour', 'Month', 'Day', 'Weekday'
     
+    # Add observation_time column (from satellite data timestamp)
+    merged_df['observation_time'] = merged_df.apply(
+        lambda row: pd.to_datetime(f"{row['date']} {row['time']}", dayfirst=True)
+        if 'date' in merged_df.columns and 'time' in merged_df.columns
+        else now,
+        axis=1
+    )
+    
     # Add Lag Features from MongoDB
     print("Fetching lag features from MongoDB...")
     lags_list = []
     for index, row in merged_df.iterrows():
-        # Use the timestamp from the data if available, else now
-        # sat.py produces 'date' (DD-MM-YYYY) and 'time' (HH:MM)
-        # We need a comparable timestamp for DB
-        try:
-            row_time = pd.to_datetime(f"{row['date']} {row['time']}", dayfirst=True)
-        except:
-            row_time = now
-            
-        lags = database.get_lag_features(row_time, row['latitude'], row['longitude'])
+        # Use observation_time (satellite timestamp) for lag queries
+        observation_time = row['observation_time']
+        lags = database.get_lag_features(observation_time, row['latitude'], row['longitude'])
         lags_list.append(lags)
     
     lags_df = pd.DataFrame(lags_list)
@@ -113,12 +115,26 @@ def run_pipeline():
     preds = np.expm1(preds_log)
     
     df['pm25'] = preds
-    df['timestamp'] = now # Store prediction time
+    df['timestamp'] = now  # Prediction execution time (when model ran)
+    # observation_time already exists from earlier merge
     
     # 5. Save to Database
-    print("Saving to MongoDB...")
-    save_df = df[['timestamp', 'latitude', 'longitude', 'pm25']].copy()
-    database.save_predictions(save_df)
+    print("Saving to MongoDB (predictions collection)...")
+    save_df = df[['timestamp', 'observation_time', 'latitude', 'longitude', 'pm25']].copy()
+    database.save_predictions(save_df, source='model')
+
+    # Report how many rows used default climatological lag fallbacks
+    default_count = 0
+    try:
+        default_mask = (
+            (lags_df['PM_lag1'] == 32.0) &
+            (lags_df['PM_lag3'] == 33.0) &
+            (lags_df['PM_lag6'] == 35.0)
+        )
+        default_count = int(default_mask.sum())
+        print(f"Note: {default_count}/{len(lags_df)} rows used climatological lag defaults.")
+    except Exception:
+        pass
     
     # 6. Export to NetCDF
     print(f"Exporting to {NC_OUTPUT}...")

@@ -1,18 +1,18 @@
 {
     "user_credentials": {
-        "username/email": "",
-        "password": ""
+        "username/email": "mathewjobey69",
+        "password": "MOSDACpassword@123"
     },
     "search_parameters": {
         "datasetId": "3RIMG_L1C_SGP",
-        "startTime": "2025-12-14",
-        "endTime": "2025-12-14",
+        "startTime": "2025-12-26",
+        "endTime": "2025-12-26",
         "count": "",
         "boundingBox": "",
         "gId": ""
     },
     "download_settings": {
-        "download_path": "e:/MAIN-PROJECT/DEPLOYMENT_SYSTEM/unprocessed-data",
+        "download_path": "E:/FINAL YEAR/unprocessed-data",
         "organize_by_date": false,
         "skip_user_input": true,
         "generate_error_logs": false,

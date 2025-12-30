@@ -89,7 +89,7 @@ def collect_data():
         print(f"🗑️ Removed old file: {WEATHER_OUTPUT}")
     
     # 1. Update Config
-    update_config_date()
+    # update_config_date()  # Disabled: preserve user-set date in config.json
     
     # 2. Download Satellite Data
     try:

@@ -1,0 +1,1 @@
+{"features": ["tp", "blh", "RH", "WS", "AT", "PCA1", "PCA2", "PCA3", "Hour", "Month", "Day", "Weekday", "PM_lag1", "PM_lag3", "PM_lag6", "PM_avg3", "PM_avg6"], "validation_rmse": 0.1682497047591899, "validation_r2": 0.9104449692679769, "test_rmse": 0.1652793599400127, "test_r2": 0.9106522943133707}
