@@ -52,7 +52,7 @@ def latlong_to_pixel(lat, lon):
 
 lat_min, lat_max = 8.0, 12.0
 lon_min, lon_max = 74.0, 77.5
-grid_res = 0.2  # reduced resolution
+grid_res = 0.1  # ~11 km resolution - better for PM2.5 prediction
 
 lat_points = np.arange(lat_min, lat_max + grid_res, grid_res)
 lon_points = np.arange(lon_min, lon_max + grid_res, grid_res)

@@ -1,12 +1,12 @@
 {
     "user_credentials": {
-        "username/email": "",
-        "password": ""
+        "username/email": "mathewjobey69",
+        "password": "MOSDACpassword@123"
     },
     "search_parameters": {
         "datasetId": "3RIMG_L1C_SGP",
-        "startTime": "2025-12-14",
-        "endTime": "2025-12-14",
+        "startTime": "2026-01-19",
+        "endTime": "2026-01-19",
         "count": "",
         "boundingBox": "",
         "gId": ""

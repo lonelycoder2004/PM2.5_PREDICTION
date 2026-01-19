@@ -71,10 +71,13 @@ def run_pipeline():
     lags_df = pd.DataFrame(lags_list)
     df = pd.concat([merged_df, lags_df], axis=1)
     
-    # Compute Rolling Averages (Approximation)
-    # If using hardcoded fallbacks from DB, these will be populated.
-    df['PM_avg3'] = (df['PM_lag1'] + df['PM_lag3']) / 2
-    df['PM_avg6'] = (df['PM_lag1'] + df['PM_lag3'] + df['PM_lag6']) / 3
+    # Compute Rolling Averages (FIXED: matching the model's training logic)
+    # Using the history_6 sequence fetched from DB
+    df['PM_avg3'] = [np.mean(hist[:3]) for hist in df['history_6']]
+    df['PM_avg6'] = [np.mean(hist[:6]) for hist in df['history_6']]
+    
+    # Drop the history_6 column as it's not needed for prediction
+    df = df.drop(columns=['history_6'])
     
     # Optional: If you want to force specific distinct defaults for avgs even when lags are present 
     # (which you likely don't, you want them derived), keep as above.
@@ -105,6 +108,14 @@ def run_pipeline():
             
     X = df[features]
     
+    # Save the final feature dataset for verification/debugging
+    print("Saving final feature dataset...")
+    feature_output = os.path.join(os.path.dirname(__file__), "deployment_features.csv")
+    # Include metadata columns + all 17 features
+    save_cols = ['date', 'time', 'latitude', 'longitude'] + features
+    df[save_cols].to_csv(feature_output, index=False)
+    print(f"✅ Saved final features to: {feature_output}")
+    
     # 4. Predict
     print("Predicting...")
     model = load_model()
@@ -115,9 +126,21 @@ def run_pipeline():
     df['pm25'] = preds
     df['timestamp'] = now # Store prediction time
     
+    # Save predictions with features for complete transparency
+    print("Saving predictions with features...")
+    pred_output = os.path.join(os.path.dirname(__file__), "deployment_predictions.csv")
+    pred_cols = ['timestamp', 'date', 'time', 'latitude', 'longitude', 'pm25'] + features
+    df[pred_cols].to_csv(pred_output, index=False)
+    print(f"✅ Saved predictions to: {pred_output}")
+    
     # 5. Save to Database
     print("Saving to MongoDB...")
-    save_df = df[['timestamp', 'latitude', 'longitude', 'pm25']].copy()
+    # IMPORTANT: Deduplicate by lat/lon before saving to avoid duplicate entries
+    # If multiple satellite passes exist for same location, take the mean prediction
+    save_df = df.groupby(['latitude', 'longitude'], as_index=False).agg({
+        'pm25': 'mean'
+    })
+    save_df['timestamp'] = now  # Add timestamp after grouping
     database.save_predictions(save_df)
     
     # 6. Export to NetCDF

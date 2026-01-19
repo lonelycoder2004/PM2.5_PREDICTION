@@ -70,15 +70,24 @@ def get_lag_features(target_time, lat, lon):
         values = []
     
     lags = {}
-    # Assuming the schedule is consistent, the previous record is lag1, etc.
-    # If the schedule is 6 hours, lag1 is T-6h, lag3 is T-18h, lag6 is T-36h.
-    # The model was trained on some lag definition (likely hourly or daily).
-    # If the model expects hourly lags but we only have 6-hourly data, this is a mismatch.
-    # However, for this deployment, we will map available history to the model's lag features.
-    
+    # Lag 1, 3, 6 (1st, 3rd, and 6th previous values)
     lags['PM_lag1'] = values[0] if len(values) >= 1 else 25.0
     lags['PM_lag3'] = values[2] if len(values) >= 3 else 24.0
     lags['PM_lag6'] = values[5] if len(values) >= 6 else 22.0
+    
+    # Values for rolling averages (need the full sequence for PM_avg3 and PM_avg6)
+    # PM_avg3 needs last 3: [v0, v1, v2]
+    # PM_avg6 needs last 6: [v0, v1, v2, v3, v4, v5]
+    # Default sequence that matches lag defaults: [25.0, 25.0, 24.0, 24.0, 22.0, 22.0]
+    default_history = [25.0, 25.0, 24.0, 24.0, 22.0, 22.0]
+    
+    if len(values) == 0:
+        lags['history_6'] = default_history
+    elif len(values) < 6:
+        # Pad with defaults from the end
+        lags['history_6'] = values + default_history[len(values):]
+    else:
+        lags['history_6'] = values[:6]
     
     return lags
 

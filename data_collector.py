@@ -44,34 +44,24 @@ def update_config_date():
 import sys
 
 def run_script(script_path):
-    """Runs a python script using subprocess."""
+    """Runs a python script using subprocess with real-time output."""
     print(f"🚀 Running {os.path.basename(script_path)}...")
     try:
-        # Run process but do NOT raise exception automatically (check=False)
+        # Run process with real-time output (no capture_output)
+        # This allows user to see progress bars and status messages
         result = subprocess.run(
             [sys.executable, script_path],
-            cwd=BASE_DIR, # Set CWD ensure relative paths work
-            capture_output=True,
-            text=True,
-            check=False 
+            cwd=BASE_DIR,  # Set CWD to ensure relative paths work
+            check=False    # Don't raise exception automatically
         )
         
-        # Print output to console so user can see what happened
-        # if result.stdout:
-        #     print(result.stdout)
-        # if result.stderr:
-        #     print("--- STDERR ---")
-        #     print(result.stderr)
-        #     print("--------------")
-
-        # Now check return code manually
+        # Check return code manually
         if result.returncode != 0:
-            raise subprocess.CalledProcessError(result.returncode, script_path, output=result.stdout, stderr=result.stderr)
+            raise subprocess.CalledProcessError(result.returncode, script_path)
 
         print(f"✅ {os.path.basename(script_path)} completed.")
     except subprocess.CalledProcessError as e:
-        print(f"❌ Error running {os.path.basename(script_path)}:")
-        # Error details already printed above via stderr
+        print(f"❌ Error running {os.path.basename(script_path)}: Exit code {e.returncode}")
         raise
 
 def collect_data():

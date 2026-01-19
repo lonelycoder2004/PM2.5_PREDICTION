@@ -15,7 +15,7 @@ openmeteo = openmeteo_requests.Client(session=retry_session)
 # Kerala bounding box (0.2° resolution)
 lat_min, lat_max = 8.0, 12.0
 lon_min, lon_max = 74.0, 77.5
-step = 0.2   # (change to 0.1 if you want more resolution)
+step = 0.1   # (change to 0.1 if you want more resolution)
 
 latitudes = np.round(np.arange(lat_min, lat_max + step, step), 1)
 longitudes = np.round(np.arange(lon_min, lon_max + step, step), 1)
